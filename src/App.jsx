@@ -1,15 +1,21 @@
 import { useState } from 'react';
-import { canistorage } from 'declarations/canistorage';
+import { init } from '@/utils/canistorage';
+import { CANISTORAGE_ID } from "@/const.ts";
+
+let canistorage = null;
 
 function App() {
   const [greeting, setGreeting] = useState('');
 
-  console.log(canistorage);
   async function handleSubmit(event) {
     event.preventDefault();
     const name = event.target.elements.name.value;
 
+    if (!canistorage) {
+      canistorage = await init(CANISTORAGE_ID);
+    }
     const version = await canistorage.version();
+
     setGreeting(version);
 
     return false;
@@ -21,6 +27,9 @@ function App() {
       <br />
       <br />
       <form action="#" onSubmit={handleSubmit}>
+      <label htmlFor="name">Canister Id of your Canistorage:&nbsp;</label>
+        <input id="name" alt="CanistorageId" type="text" value={CANISTORAGE_ID} disabled/>
+
         <label htmlFor="name">Enter your name: &nbsp;</label>
         <input id="name" alt="Name" type="text" />
         <button type="submit">Click Me!</button>

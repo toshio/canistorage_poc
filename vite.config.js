@@ -38,6 +38,12 @@ export default defineConfig({
           new URL("./src/declarations", import.meta.url)
         ),
       },
+      {
+        find: "@/",
+        replacement: fileURLToPath(
+          new URL("./src/", import.meta.url)
+        ),
+      },
     ],
     dedupe: ['@dfinity/agent'],
   },
