@@ -1,17 +1,17 @@
 import { useState } from 'react';
-//import { webapp_backend } from 'declarations/webapp_backend';
+import { canistorage } from 'declarations/canistorage';
 
 function App() {
   const [greeting, setGreeting] = useState('');
 
-  function handleSubmit(event) {
+  console.log(canistorage);
+  async function handleSubmit(event) {
     event.preventDefault();
     const name = event.target.elements.name.value;
-/*
-    webapp_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
-*/
+
+    const version = await canistorage.version();
+    setGreeting(version);
+
     return false;
   }
 
