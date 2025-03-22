@@ -3,13 +3,26 @@ import type { ActorMethod } from '@dfinity/agent';
 import type { IDL } from '@dfinity/candid';
 
 export interface Error { 'code' : number, 'message' : string }
+export interface FileInfoForPoC {
+  'updated_at' : bigint,
+  'creator' : Principal,
+  'writable' : Array<Principal>,
+  'path' : string,
+  'size' : bigint,
+  'created_at' : bigint,
+  'children' : [] | [Array<FileInfoForPoC>],
+  'mimetype' : string,
+  'readable' : Array<Principal>,
+  'updater' : Principal,
+  'manageable' : Array<Principal>,
+}
 export interface Info {
   'updated_at' : bigint,
   'creator' : Principal,
   'sha256' : [] | [Uint8Array | number[]],
   'size' : bigint,
-  'mime_type' : string,
   'created_at' : bigint,
+  'mimetype' : string,
   'updater' : Principal,
 }
 export interface Permission {
@@ -19,18 +32,20 @@ export interface Permission {
 }
 export type Result = { 'Ok' : null } |
   { 'Err' : Error };
-export type Result_1 = { 'Ok' : Info } |
+export type Result_1 = { 'Ok' : FileInfoForPoC } |
   { 'Err' : Error };
-export type Result_2 = { 'Ok' : Permission } |
+export type Result_2 = { 'Ok' : Info } |
   { 'Err' : Error };
-export type Result_3 = { 'Ok' : Array<string> } |
+export type Result_3 = { 'Ok' : Permission } |
   { 'Err' : Error };
-export type Result_4 = { 'Ok' : Uint8Array | number[] } |
+export type Result_4 = { 'Ok' : Array<string> } |
   { 'Err' : Error };
-export type Result_5 = { 'Ok' : bigint } |
+export type Result_5 = { 'Ok' : Uint8Array | number[] } |
+  { 'Err' : Error };
+export type Result_6 = { 'Ok' : bigint } |
   { 'Err' : Error };
 export interface _SERVICE {
-  'add_permission' : ActorMethod<
+  'addPermission' : ActorMethod<
     [Principal, string, boolean, boolean, boolean],
     Result
   >,
@@ -42,12 +57,13 @@ export interface _SERVICE {
   >,
   'createDirectory' : ActorMethod<[string], Result>,
   'delete' : ActorMethod<[string], Result>,
-  'deleteDirectory' : ActorMethod<[string], Result>,
-  'getInfo' : ActorMethod<[string], Result_1>,
-  'hasPermission' : ActorMethod<[string], Result_2>,
-  'listFiles' : ActorMethod<[string], Result_3>,
-  'load' : ActorMethod<[string], Result_4>,
-  'remove_permission' : ActorMethod<
+  'deleteDirectory' : ActorMethod<[string, boolean], Result>,
+  'getAllInfoForPoC' : ActorMethod<[], Result_1>,
+  'getInfo' : ActorMethod<[string], Result_2>,
+  'hasPermission' : ActorMethod<[string], Result_3>,
+  'listFiles' : ActorMethod<[string], Result_4>,
+  'load' : ActorMethod<[string], Result_5>,
+  'removePermission' : ActorMethod<
     [Principal, string, boolean, boolean, boolean],
     Result
   >,
@@ -55,7 +71,7 @@ export interface _SERVICE {
     [string, string, Uint8Array | number[], boolean],
     Result
   >,
-  'sendData' : ActorMethod<[string, bigint, Uint8Array | number[]], Result_5>,
+  'sendData' : ActorMethod<[string, bigint, Uint8Array | number[]], Result_6>,
   'version' : ActorMethod<[], string>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
