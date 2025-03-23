@@ -53,6 +53,7 @@ export const idlFactory = ({ IDL }) => {
     'createDirectory' : IDL.Func([IDL.Text], [Result], []),
     'delete' : IDL.Func([IDL.Text], [Result], []),
     'deleteDirectory' : IDL.Func([IDL.Text, IDL.Bool], [Result], []),
+    'forceResetForPoC' : IDL.Func([], [Result], []),
     'getAllInfoForPoC' : IDL.Func([], [Result_1], ['query']),
     'getInfo' : IDL.Func([IDL.Text], [Result_2], ['query']),
     'hasPermission' : IDL.Func([IDL.Text], [Result_3], ['query']),

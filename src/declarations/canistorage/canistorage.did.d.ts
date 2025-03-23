@@ -58,6 +58,7 @@ export interface _SERVICE {
   'createDirectory' : ActorMethod<[string], Result>,
   'delete' : ActorMethod<[string], Result>,
   'deleteDirectory' : ActorMethod<[string, boolean], Result>,
+  'forceResetForPoC' : ActorMethod<[], Result>,
   'getAllInfoForPoC' : ActorMethod<[], Result_1>,
   'getInfo' : ActorMethod<[string], Result_2>,
   'hasPermission' : ActorMethod<[string], Result_3>,
