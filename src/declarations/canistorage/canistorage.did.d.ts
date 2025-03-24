@@ -46,7 +46,7 @@ export type Result_6 = { 'Ok' : bigint } |
   { 'Err' : Error };
 export interface _SERVICE {
   'addPermission' : ActorMethod<
-    [Principal, string, boolean, boolean, boolean],
+    [string, Principal, boolean, boolean, boolean],
     Result
   >,
   'beginUpload' : ActorMethod<[string, string, boolean], Result>,
@@ -62,10 +62,11 @@ export interface _SERVICE {
   'getAllInfoForPoC' : ActorMethod<[], Result_1>,
   'getInfo' : ActorMethod<[string], Result_2>,
   'hasPermission' : ActorMethod<[string], Result_3>,
+  'initCanistorage' : ActorMethod<[], Result>,
   'listFiles' : ActorMethod<[string], Result_4>,
   'load' : ActorMethod<[string], Result_5>,
   'removePermission' : ActorMethod<
-    [Principal, string, boolean, boolean, boolean],
+    [string, Principal, boolean, boolean, boolean],
     Result
   >,
   'save' : ActorMethod<

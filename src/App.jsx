@@ -12,18 +12,48 @@ let canistorage;
 })();
 
 function App() {
-  const [version, setVersion] = useState('');
   // User
   const [user, setUser] = useState('');
   const [principal, setPrincipal] = useState('');
+  // Version
+  const [version, setVersion] = useState('');
+
+  // initCanistorage
+  const [resultInitCanistorage, setResultInitCanistorage] = useState('');
+  const [errorInitCanistorage, setErrorInitCanistorage] = useState('');
+
   // listFiles
   const [listFilesPath, setListFilesPath] = useState('');
-  const [files, setFiles] = useState('');
+  const [resultListFiles, setResultListFiles] = useState('');
   const [errorListFiles, setErrorListFiles] = useState('');
   // getInfo
   const [getInfoPath, setGetInfoPath] = useState('');
-  const [info, setInfo] = useState('');
+  const [resultGetInfo, setResultGetInfo] = useState('');
   const [errorGetInfo, setErrorGetInfo] = useState('');
+  // hasPermission
+  const [hasPermissionPath, setHasPermissionPath] = useState('');
+  const [resultHasPermission, setResultHasPermission] = useState('');
+  const [errorHasPermission, setErrorHasPermission] = useState('');
+  // addPermission
+  const [addPermissionPath, setAddPermissionPath] = useState('');
+  const [addPermissionUser, setAddPermissionUser] = useState('');
+  const [addPermissionType, setAddPermissionType] = useState('');
+  const [resultAddPermission, setResultAddPermission] = useState('');
+  const [errorAddPermission, setErrorAddPermission] = useState('');
+  // removePermission
+  const [removePermissionPath, setRemovePermissionPath] = useState('');
+  const [removePermissionUser, setRemovePermissionUser] = useState('');
+  const [removePermissionType, setRemovePermissionType] = useState('');
+  const [resultRemovePermission, setResultRemovePermission] = useState('');
+  const [errorRemovePermission, setErrorRemovePermission] = useState('');
+  // createDirectory
+  const [createDirectoryPath, setCreateDirectoryPath] = useState('');
+  const [resultCreateDirectory, setResultCreateDirectory] = useState('');
+  const [errorCreateDirectory, setErrorCreateDirectory] = useState('');
+  // deleteDirectory
+  const [deleteDirectoryPath, setDeleteDirectoryPath] = useState('');
+  const [resultDeleteDirectory, setResultDeleteDirectory] = useState('');
+  const [errorDeleteDirectory, setErrorDeleteDirectory] = useState('');
 
   function changeUser(e) {
     const newUser = e.target.value;
@@ -49,47 +79,168 @@ function App() {
     }
   }
 
+  async function initCanistorage() {
+    setResultInitCanistorage("");
+    setErrorInitCanistorage("");
+
+    try {
+      const result = await canistorage.initCanistorage();
+      if (result.Err) {
+        setErrorInitCanistorage(result.Err.message);
+      } else {
+        // result.Ok
+        setResultInitCanistorage("initialized.");
+      }
+    } catch (e) {
+      setErrorInitCanistorage(e.message);
+    }
+  }
+
   async function listFiles() {
+    setResultListFiles("");
     setErrorListFiles("");
-    setFiles("");
 
     try {
       const result = await canistorage.listFiles(listFilesPath);
 
       if (result.Err) {
         setErrorListFiles(result.Err.message);
-        setFiles("");
       } else {
-        setErrorListFiles("");
-        setFiles(result.Ok);
+        // result.Ok
+        setResultListFiles(result.Ok);
       }
     } catch (e) {
-      setErrorListFiles("");
       setErrorListFiles(e.message);
     }
   }
 
   async function getInfo() {
+    setResultGetInfo("");
     setErrorGetInfo("");
-    setInfo("");
 
     try {
       const result = await canistorage.getInfo(getInfoPath);
 
       if (result.Err) {
         setErrorGetInfo(result.Err.message);
-        setInfo("");
       } else {
-        setErrorGetInfo("");
-        setInfo(JSON.stringify(result.Ok, (key,value) => {
+        // result.Ok
+        setResultGetInfo(JSON.stringify(result.Ok, (key,value) => {
           return typeof value === 'bigint'
             ? Number(value.toString()) // return bigint as number (2^53-1; too enough for date)
             : value
         }, 2));
       }
     } catch (e) {
-      setErrorGetInfo("");
-      setInfo(e.message);
+      setErrorGetInfo(e.message);
+    }
+  }
+
+
+  async function hasPermission() {
+    setResultHasPermission("");
+    setErrorHasPermission("");
+
+    try {
+      const result = await canistorage.hasPermission(hasPermissionPath);
+
+      if (result.Err) {
+        setErrorHasPermission(result.Err.message);
+      } else {
+        // result.Ok
+        const { manageable, readable, writable } = result.Ok;
+        setResultHasPermission(`${readable?"read ":""}${writable?"write ":""}${manageable?"manage ":""}`);
+      }
+    } catch (e) {
+      setErrorHasPermission(e.message);
+    }
+  }
+
+  async function addPermission() {
+    setResultAddPermission("");
+    setErrorAddPermission("");
+
+    try {
+
+      const result = await canistorage.addPermission(
+        addPermissionPath,
+        USERS[addPermissionUser].identity.getPrincipal(),
+        addPermissionType == "manageable",
+        addPermissionType == "readable",
+        addPermissionType == "writable"
+      );
+
+      if (result.Err) {
+        alert(result.Err);
+        setErrorAddPermission(result.Err.message);
+      } else {
+        // result.Ok
+        setResultAddPermission("Success");
+      }
+    } catch (e) {
+      setErrorAddPermission(e.message);
+    }
+  }
+
+  async function removePermission() {
+    setResultRemovePermission("");
+    setErrorRemovePermission("");
+
+    try {
+
+      const result = await canistorage.removePermission(
+        removePermissionPath,
+        USERS[removePermissionUser].identity.getPrincipal(),
+        removePermissionType == "manageable",
+        removePermissionType == "readable",
+        removePermissionType == "writable"
+      );
+
+      if (result.Err) {
+        setErrorRemovePermission(result.Err.message);
+      } else {
+        // result.Ok
+        setResultRemovePermission("Success")
+      }
+    } catch (e) {
+      setErrorRemovePermission(e.message);
+    }
+  }
+
+  async function createDirectory() {
+    setResultCreateDirectory("");
+    setErrorCreateDirectory("");
+
+    try {
+      const result = await canistorage.createDirectory(createDirectoryPath);
+
+      if (result.Err) {
+        setErrorCreateDirectory(result.Err.message);
+      } else {
+        // result.Ok
+        setResultCreateDirectory("Success")
+      }
+    } catch (e) {
+      setErrorCreateDirectory(e.message);
+    }
+  }
+
+
+  async function deleteDirectory() {
+    setResultDeleteDirectory("");
+    setErrorDeleteDirectory("");
+
+    try {
+      const result = await canistorage.deleteDirectory(deleteDirectoryPath);
+
+      if (result.Err) {
+        setErrorDeleteDirectory(result.Err.message);
+      } else {
+        // result.Ok
+        setResultDeleteDirectory("Success")
+      }
+    } catch (e) {
+      setErrorDeleteDirectory(e.message);
     }
   }
 
@@ -135,7 +286,7 @@ function App() {
         </tr>
         <tr>
           <td>
-            <select id="user" onChange={changeUser}>
+            <select onChange={changeUser}>
               <option value=""></option>
               {Object.keys(USERS).map((name, index) =>
                 <option value={name}>{name}</option>
@@ -170,37 +321,141 @@ function App() {
         </tr>
 
         <tr>
+          <td>initCanistorage</td>
+          <td>&nbsp;</td>
+          <td>
+            <button onClick={initCanistorage} type="submit" disabled={!user}>initCanistorage()</button>
+          </td>
+          <td>
+            <span>{resultInitCanistorage}</span>
+            <span className="error">{errorInitCanistorage}</span>&nbsp;<br/>
+          </td>
+        </tr>
+
+        <tr>
           <td>listFiles</td>
           <td>
-            <input id="listFilesPath" type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setListFilesPath(e.target.value)}/>
+            <input type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setListFilesPath(e.target.value)}/>
           </td>
           <td>
             <button onClick={listFiles} type="submit" disabled={!user||!listFilesPath}>listFile()</button>
           </td>
           <td>
             <span className="error">{errorListFiles}</span>&nbsp;<br/>
-            <textarea defaultValue={files} readOnly />
+            <textarea defaultValue={resultListFiles} readOnly />
           </td>
         </tr>
 
         <tr>
           <td>getInfo</td>
           <td>
-            <input id="getInfoPath" type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setGetInfoPath(e.target.value)}/>
+            <input type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setGetInfoPath(e.target.value)}/>
           </td>
           <td>
             <button onClick={getInfo} type="submit" disabled={!user||!getInfoPath}>getInfo()</button>
           </td>
           <td>
             <span className="error">{errorGetInfo}</span>&nbsp;<br/>
-            <textarea defaultValue={info} readOnly />
+            <textarea defaultValue={resultGetInfo} readOnly />
           </td>
         </tr>
-        
+
+        <tr>
+          <td>hasPermission</td>
+          <td>
+              <input type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setHasPermissionPath(e.target.value)}/><br/>
+          </td>
+          <td>
+            <button onClick={hasPermission} type="submit" disabled={!user||!hasPermissionPath}>hasPermission()</button>
+          </td>
+          <td>
+            <span>{resultHasPermission}</span>
+            <span className="error">{errorHasPermission}</span>&nbsp;<br/>
+          </td>
+        </tr>
+
+        <tr>
+          <td>addPermission</td>
+          <td>
+              <input type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setAddPermissionPath(e.target.value)}/><br/>
+              <select onChange={(e)=>setAddPermissionUser(e.target.value)}>
+                <option value=""></option>
+                {Object.keys(USERS).map((name, index) =>
+                  <option value={name}>{name}</option>
+                )}
+              </select><br/>
+              <select onChange={(e)=>setAddPermissionType(e.target.value)}>
+                <option value="readable">readable</option>
+                <option value="writable">writable</option>
+                <option value="manageable">manageable</option>
+              </select>
+          </td>
+          <td>
+            <button onClick={addPermission} type="submit" disabled={!user||!addPermissionPath||!addPermissionUser}>addPermission()</button>
+          </td>
+          <td>
+            <span>{resultAddPermission}</span>
+            <span className="error">{errorAddPermission}</span>&nbsp;<br/>
+          </td>
+        </tr>
+
+        <tr>
+          <td>removePermission</td>
+          <td>
+              <input type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setRemovePermissionPath(e.target.value)}/><br/>
+              <select onChange={(e)=>setRemovePermissionUser(e.target.value)}>
+                <option value=""></option>
+                {Object.keys(USERS).map((name, index) =>
+                  <option value={name}>{name}</option>
+                )}
+              </select><br/>
+              <select onChange={(e)=>setRemovePermissionType(e.target.value)}>
+                <option value="readable">readable</option>
+                <option value="writable">writable</option>
+                <option value="manageable">manageable</option>
+              </select>
+          </td>
+          <td>
+            <button onClick={removePermission} type="submit" disabled={!user||!removePermissionPath||!removePermissionUser}>removePermission()</button>
+          </td>
+          <td>
+            <span>{resultRemovePermission}</span>
+            <span className="error">{errorRemovePermission}</span>&nbsp;<br/>
+          </td>
+        </tr>
+
+        <tr>
+          <td>createDirectory</td>
+          <td>
+              <input type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setCreateDirectoryPath(e.target.value)}/><br/>
+          </td>
+          <td>
+            <button onClick={createDirectory} type="submit" disabled={!user||!createDirectoryPath}>createDirectory()</button>
+          </td>
+          <td>
+            <span>{resultCreateDirectory}</span>
+            <span className="error">{errorCreateDirectory}</span>&nbsp;<br/>
+          </td>
+        </tr>
+
+        <tr>
+          <td>deleteDirectory</td>
+          <td>
+              <input type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setDeleteDirectoryPath(e.target.value)}/><br/>
+          </td>
+          <td>
+            <button onClick={deleteDirectory} type="submit" disabled={!user||!deleteDirectoryPath}>deleteDirectory()</button>
+          </td>
+          <td>
+            <span>{resultDeleteDirectory}</span>
+            <span className="error">{errorDeleteDirectory}</span>&nbsp;<br/>
+          </td>
+        </tr>
 
       </table>
       <hr/>
       <h2>Permissions</h2>
+
       <table>
         <tr>
           <th>Path</th>

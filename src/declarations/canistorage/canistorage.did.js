@@ -39,7 +39,7 @@ export const idlFactory = ({ IDL }) => {
   const Result_6 = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : Error });
   return IDL.Service({
     'addPermission' : IDL.Func(
-        [IDL.Principal, IDL.Text, IDL.Bool, IDL.Bool, IDL.Bool],
+        [IDL.Text, IDL.Principal, IDL.Bool, IDL.Bool, IDL.Bool],
         [Result],
         [],
       ),
@@ -57,10 +57,11 @@ export const idlFactory = ({ IDL }) => {
     'getAllInfoForPoC' : IDL.Func([], [Result_1], ['query']),
     'getInfo' : IDL.Func([IDL.Text], [Result_2], ['query']),
     'hasPermission' : IDL.Func([IDL.Text], [Result_3], ['query']),
+    'initCanistorage' : IDL.Func([], [Result], []),
     'listFiles' : IDL.Func([IDL.Text], [Result_4], ['query']),
     'load' : IDL.Func([IDL.Text], [Result_5], ['query']),
     'removePermission' : IDL.Func(
-        [IDL.Principal, IDL.Text, IDL.Bool, IDL.Bool, IDL.Bool],
+        [IDL.Text, IDL.Principal, IDL.Bool, IDL.Bool, IDL.Bool],
         [Result],
         [],
       ),
