@@ -17,9 +17,13 @@ function App() {
   const [user, setUser] = useState('');
   const [principal, setPrincipal] = useState('');
   // listFiles
-  const [path, setPath] = useState('');
+  const [listFilesPath, setListFilesPath] = useState('');
   const [files, setFiles] = useState('');
   const [errorListFiles, setErrorListFiles] = useState('');
+  // getInfo
+  const [getInfoPath, setGetInfoPath] = useState('');
+  const [info, setInfo] = useState('');
+  const [errorGetInfo, setErrorGetInfo] = useState('');
 
   function changeUser(e) {
     const newUser = e.target.value;
@@ -50,7 +54,7 @@ function App() {
     setFiles("");
 
     try {
-      const result = await canistorage.listFiles(path);
+      const result = await canistorage.listFiles(listFilesPath);
 
       if (result.Err) {
         setErrorListFiles(result.Err.message);
@@ -62,6 +66,30 @@ function App() {
     } catch (e) {
       setErrorListFiles("");
       setErrorListFiles(e.message);
+    }
+  }
+
+  async function getInfo() {
+    setErrorGetInfo("");
+    setInfo("");
+
+    try {
+      const result = await canistorage.getInfo(getInfoPath);
+
+      if (result.Err) {
+        setErrorGetInfo(result.Err.message);
+        setInfo("");
+      } else {
+        setErrorGetInfo("");
+        setInfo(JSON.stringify(result.Ok, (key,value) => {
+          return typeof value === 'bigint'
+            ? Number(value.toString()) // return bigint as number (2^53-1; too enough for date)
+            : value
+        }, 2));
+      }
+    } catch (e) {
+      setErrorGetInfo("");
+      setInfo(e.message);
     }
   }
 
@@ -144,16 +172,32 @@ function App() {
         <tr>
           <td>listFiles</td>
           <td>
-            <input id="listFilesPath" type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setPath(e.target.value)}/>
+            <input id="listFilesPath" type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setListFilesPath(e.target.value)}/>
           </td>
           <td>
-            <button onClick={listFiles} type="submit" disabled={!user||!path}>listFile()</button>
+            <button onClick={listFiles} type="submit" disabled={!user||!listFilesPath}>listFile()</button>
           </td>
           <td>
             <span className="error">{errorListFiles}</span>&nbsp;<br/>
             <textarea defaultValue={files} readOnly />
           </td>
         </tr>
+
+        <tr>
+          <td>getInfo</td>
+          <td>
+            <input id="getInfoPath" type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setGetInfoPath(e.target.value)}/>
+          </td>
+          <td>
+            <button onClick={getInfo} type="submit" disabled={!user||!getInfoPath}>getInfo()</button>
+          </td>
+          <td>
+            <span className="error">{errorGetInfo}</span>&nbsp;<br/>
+            <textarea defaultValue={info} readOnly />
+          </td>
+        </tr>
+        
+
       </table>
       <hr/>
       <h2>Permissions</h2>
