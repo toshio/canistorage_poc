@@ -161,7 +161,6 @@ function App() {
     setErrorAddPermission("");
 
     try {
-
       const result = await canistorage.addPermission(
         addPermissionPath,
         USERS[addPermissionUser].identity.getPrincipal(),
@@ -385,13 +384,14 @@ function App() {
                 )}
               </select><br/>
               <select onChange={(e)=>setAddPermissionType(e.target.value)}>
+                <option value=""></option>
                 <option value="readable">readable</option>
                 <option value="writable">writable</option>
                 <option value="manageable">manageable</option>
               </select>
           </td>
           <td>
-            <button onClick={addPermission} type="submit" disabled={!user||!addPermissionPath||!addPermissionUser}>addPermission()</button>
+            <button onClick={addPermission} type="submit" disabled={!user||!addPermissionPath||!addPermissionUser||!addPermissionType}>addPermission()</button>
           </td>
           <td>
             <span>{resultAddPermission}</span>
@@ -410,13 +410,14 @@ function App() {
                 )}
               </select><br/>
               <select onChange={(e)=>setRemovePermissionType(e.target.value)}>
+                <option value=""></option>
                 <option value="readable">readable</option>
                 <option value="writable">writable</option>
                 <option value="manageable">manageable</option>
               </select>
           </td>
           <td>
-            <button onClick={removePermission} type="submit" disabled={!user||!removePermissionPath||!removePermissionUser}>removePermission()</button>
+            <button onClick={removePermission} type="submit" disabled={!user||!removePermissionPath||!removePermissionUser||!addPermissionType}>removePermission()</button>
           </td>
           <td>
             <span>{resultRemovePermission}</span>
