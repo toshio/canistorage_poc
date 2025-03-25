@@ -1,7 +1,7 @@
 import { Secp256k1KeyIdentity } from '@dfinity/identity-secp256k1';
 import { AnonymousIdentity, Identity } from '@dfinity/agent';
 
-export const CANISTORAGE_ID = (process.env.DFX_NETWORK == "ic") ? "TODO" : process.env.CANISTER_ID_CANISTORAGE;
+export const CANISTORAGE_ID = (process.env.DFX_NETWORK == "ic") ? "tw3il-viaaa-aaaak-quepa-cai" : process.env.CANISTER_ID_CANISTORAGE;
 
 interface User {
   identity: Identity;
