@@ -486,6 +486,17 @@ function App() {
         基本的にDAppやCanister経由で行われる想定ですので、ユーザーが公開メソッドを直接呼び出すことはありませんが、<br/>
         今回のICPハッカソン2025では、サンプルDAppの開発まで手が回りませんでしたので、簡易の動作確認用として本サイトを用意しました。
       </p>
+      <h3>使い方</h3>
+      <p>
+        <ol>
+          <li>「Access User」でCanisterにアクセスするPrincipalを選択します。</li>
+          <li>初期状態では何も保存されていないため、initCanistorage()を実行します。選択したAccess Userでルートディレクトリ（/）配下のアクセス権限が付与されます。</li>
+          <li>createDirectory()ディレクトリでディレクトリ作成や、save()でファイルの保存ができます。（現状1MiB制限あり）<br/>※この検証サイトには機密性の高いファイルは保存しないでください。</li>
+          <li>manageable権限を持っている場合は、addPermission()で他のPrincipalにアクセス権限を付与できます。</li>
+          <li>「Directories/Files」の「更新」ボタンで、現在のディレクトリやファイル情報を取得できます。（TODO テーブル表示化）</li>
+          <li>初期状態に戻したい場合には「強制リセット」を押してください。</li>
+        </ol>
+      </p>
       <h2>GitHub</h2>
       Canistorage: <a href="https://github.com/toshio/canistorage" target="_blank">https://github.com/toshio/canistorage</a><br/>
       This PoC site: <a href="https://github.com/toshio/canistorage_poc" target="_blank">https://github.com/toshio/canistorage_poc</a><br/>
