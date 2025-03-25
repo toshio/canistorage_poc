@@ -129,7 +129,7 @@ function App() {
         setErrorListFiles(result.Err.message);
       } else {
         // result.Ok
-        setResultListFiles(result.Ok);
+        setResultListFiles(result.Ok.join("\n"));
       }
     } catch (e) {
       setErrorListFiles(e.message);
@@ -497,7 +497,7 @@ function App() {
         <ol>
           <li>「Access User」でCanisterにアクセスするテスト用Principalを選択します。</li>
           <li>初期状態では何も保存されていないため、initCanistorage()を実行します。選択したAccess Userでルートディレクトリ（/）配下のアクセス権限が付与されます。</li>
-          <li>createDirectory()ディレクトリでディレクトリ作成や、save()でファイル（現状1MiB上限）の保存ができます。<br/>※この検証サイトには機密性の高いファイルは保存しないでください。</li>
+          <li>createDirectory()でディレクトリの作成や、save()でファイル（現状1MiB上限）の保存ができます。<br/>※この検証サイトには機密性の高いファイルは保存しないでください。</li>
           <li>manageable権限を持っている場合は、addPermission()で他のPrincipalにアクセス権限を付与できます。（権限は親ディレクトリを継承します）</li>
           <li>「Directories/Files」の「更新」ボタンで、現在のディレクトリやファイル情報を取得できます。</li>
           <li>初期状態に戻したい場合には「強制リセット」を押してください。</li>
@@ -530,7 +530,7 @@ function App() {
         </tr>
 
         <tr>
-          <th colSpan="4">Canistorage Information</th>
+          <th colSpan="4">Target Canistorage Information</th>
         </tr>
         <tr>
           <td>Canister Id</td>
@@ -549,6 +549,10 @@ function App() {
           <td>
             <input type="text" value={version} readOnly />
           </td>
+        </tr>
+
+        <tr>
+          <th colSpan="4">Interfaces</th>
         </tr>
 
         <tr>
@@ -730,6 +734,7 @@ function App() {
         </tr>
 
       </table>
+      <br/>
       <hr/>
       <h2>Directories/Files &nbsp;&nbsp;<button onClick={getAllInfoForPoC} type="submit">更新</button></h2>
       <span className="error">{errorGetAllInfoForPoC}</span>&nbsp;<br/>
