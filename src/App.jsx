@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Actor } from "@dfinity/agent";
 import { init } from "@/utils/canistorage";
-import { CANISTORAGE_ID, USERS } from "@/const.ts";
+import { CANISTORAGE_ID, USERS, PRINCIPALS } from "@/const.ts";
 import mime from "mime";
+import { Principal } from "@dfinity/principal";
 
 let canistorage;
 
 // Canistorageのインスタンスを初期化
 (async ()=>{
-  console.log("init()");
   canistorage = await init(CANISTORAGE_ID);
 })();
 
@@ -71,7 +71,9 @@ function App() {
   const [errorDelete, setErrorDelete] = useState('');
 
   // getAllInfoForPoC
+  const [resultGetAllInfoForPoC, setResultGetAllInfoForPoC ] = useState('');
   const [errorGetAllInfoForPoC, setErrorGetAllInfoForPoC] = useState('');
+
   // forceResetForPoC
   const [errorForceResetForPoC, setErrorForceResetForPoC] = useState('');
   
@@ -169,7 +171,11 @@ function App() {
       } else {
         // result.Ok
         const { manageable, readable, writable } = result.Ok;
-        setResultHasPermission(`${readable?"read ":""}${writable?"write ":""}${manageable?"manage ":""}`);
+        if (manageable || readable || writable) {
+          setResultHasPermission(`Permissions: ${readable?"read ":""}${writable?"write ":""}${manageable?"manage ":""}`);
+        } else {
+          setResultHasPermission(`Permissions: None`);
+        }
       }
     } catch (e) {
       setErrorHasPermission(e.message);
@@ -357,31 +363,68 @@ function App() {
         setErrorGetAllInfoForPoC(result.Err.message);
       } else {
         // result.Ok
-        //TODO
+
+        // TODO DEBUG
+        const table = "TODO: テーブル表示化"
+                    + "<pre>"
+                    + JSON.stringify(result.Ok, (key,value) => {
+                      return typeof value === 'bigint'
+                        ? Number(value.toString()) // return bigint as number (2^53-1; too enough for date)
+                        : value
+                    }, 2)
+                    + "</pre>";
+/*
+        //TODO 時間無いのでraw htmlで頑張ることにする
+        let table = "<table>"
+                  + "  <tr>"
+                  + "    <th>Path</th>"
+                  + "    <th>Type</th>"
+                  + "    <th>Size</th>"
+                  + "    <th>Owner</th>"
+                  + "    <th>Readable</th>"
+                  + "    <th>Writable</th>"
+                  + "    <th>Manageable</th>"
+                  + "  </tr>\n";
+
+        const findNameByPrincipal = (principal) => {
+          const key = principal.toText();
+          return PRINCIPALS[key] || key;
+        };
+
+        const findNamesByPrincipals = (principals) => {
+          if (principals.length == 0) {
+            return "";
+          }
+          return principals.reduce((str, principal)=>str+findNameByPrincipal(principal)+"<br/>", "");
+        };
+
+        const renderRow = (info) => {
+          console.log(JSON.stringify(info.path));
+          console.log(`children.length: ${info.children?.length}`);
+          const isDirectory = info.mimetype == "canistorage/directory";
+          table += `  <tr>
+                        <td>${info.path}</th>
+                        <td>${isDirectory ? "" : info.mimetype}</td>
+                        <td>${isDirectory ? "" : info.size}</td>
+                        <td>${findNameByPrincipal(info.creator)}</td>
+                        <td>${findNamesByPrincipals(info.readable)}</td>
+                        <td>${findNamesByPrincipals(info.writable)}</td>
+                        <td>${findNamesByPrincipals(info.manageable)}</td>
+                      </tr>\n`;
+
+          for (const child of info.children) {
+            if (child?.path) // TODO childrenが正しくとれない。
+              renderRow(child);
+          }
+        };
+        renderRow(result.Ok);
+        table += "</table>\n";
+*/
+        setResultGetAllInfoForPoC(table);
       }
     } catch (e) {
       setErrorGetAllInfoForPoC(e.message);
     }
-    return (
-      <div className="App">
-          <table>
-              <tr>
-                  <th>Name</th>
-                  <th>Age</th>
-                  <th>Gender</th>
-              </tr>
-              {data.map((val, key) => {
-                  return (
-                      <tr key={key}>
-                          <td>{val.name}</td>
-                          <td>{val.age}</td>
-                          <td>{val.gender}</td>
-                      </tr>
-                  )
-              })}
-          </table>
-      </div>
-    );
   }
 
   async function forceResetForPoC() {
@@ -672,26 +715,8 @@ function App() {
       </table>
       <hr/>
       <h2>Directories/Files &nbsp;&nbsp;<button onClick={getAllInfoForPoC} type="submit">更新</button></h2>
-      <div>
-
-      </div>
-      
-      <table>
-        <tr>
-          <th>Path</th>
-          <th>User</th>
-          <th>Principal</th>
-          <th>Readable</th>
-          <th>Writable</th>
-        </tr>
-        <tr>
-          <td>/</td>
-          <td>admin</td>
-          <td>{USERS["admin"]?.principal}</td>
-          <td>true</td>
-          <td>true</td>
-        </tr>
-      </table>
+      <span className="error">{errorGetAllInfoForPoC}</span>&nbsp;<br/>
+      <div dangerouslySetInnerHTML={{ __html: resultGetAllInfoForPoC }} />
 
       <br/>
       <hr/>

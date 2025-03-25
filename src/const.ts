@@ -20,10 +20,14 @@ const anonymousIdentity = new AnonymousIdentity();
 
 // Test identities
 export const USERS:{[name:string]: User} = {
-  "admin": creteUserFromSingleWord("goddess"),
-  "test": creteUserFromSingleWord("test"),
+  "userA": creteUserFromSingleWord("goddess"),
+  "userB": creteUserFromSingleWord("baby"),
+  "userC": creteUserFromSingleWord("test"),
   "anonymous": <User>{
     identity: anonymousIdentity,
     principal: anonymousIdentity.getPrincipal().toText()
   }
 };
+
+// mapping principal to name
+export const PRINCIPALS = Object.fromEntries(Object.entries(USERS).map(([name, value]) => [value.principal, name]));
