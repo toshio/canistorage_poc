@@ -495,11 +495,11 @@ function App() {
       <h3>使い方</h3>
       <p>
         <ol>
-          <li>「Access User」でCanisterにアクセスするPrincipalを選択します。</li>
+          <li>「Access User」でCanisterにアクセスするテスト用Principalを選択します。</li>
           <li>初期状態では何も保存されていないため、initCanistorage()を実行します。選択したAccess Userでルートディレクトリ（/）配下のアクセス権限が付与されます。</li>
-          <li>createDirectory()ディレクトリでディレクトリ作成や、save()でファイルの保存ができます。（現状1MiB制限あり）<br/>※この検証サイトには機密性の高いファイルは保存しないでください。</li>
-          <li>manageable権限を持っている場合は、addPermission()で他のPrincipalにアクセス権限を付与できます。</li>
-          <li>「Directories/Files」の「更新」ボタンで、現在のディレクトリやファイル情報を取得できます。（TODO テーブル表示化）</li>
+          <li>createDirectory()ディレクトリでディレクトリ作成や、save()でファイル（現状1MiB上限）の保存ができます。<br/>※この検証サイトには機密性の高いファイルは保存しないでください。</li>
+          <li>manageable権限を持っている場合は、addPermission()で他のPrincipalにアクセス権限を付与できます。（権限は親ディレクトリを継承します）</li>
+          <li>「Directories/Files」の「更新」ボタンで、現在のディレクトリやファイル情報を取得できます。</li>
           <li>初期状態に戻したい場合には「強制リセット」を押してください。</li>
         </ol>
       </p>
