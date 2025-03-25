@@ -2,6 +2,12 @@ import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 import type { IDL } from '@dfinity/candid';
 
+export interface Download {
+  'sha256' : [] | [Uint8Array | number[]],
+  'downloaded_at' : bigint,
+  'chunk' : Uint8Array | number[],
+  'size' : bigint,
+}
 export interface Error { 'code' : number, 'message' : string }
 export interface FileInfoForPoC {
   'updated_at' : bigint,
@@ -40,7 +46,7 @@ export type Result_3 = { 'Ok' : Permission } |
   { 'Err' : Error };
 export type Result_4 = { 'Ok' : Array<string> } |
   { 'Err' : Error };
-export type Result_5 = { 'Ok' : Uint8Array | number[] } |
+export type Result_5 = { 'Ok' : Download } |
   { 'Err' : Error };
 export type Result_6 = { 'Ok' : bigint } |
   { 'Err' : Error };
@@ -64,7 +70,7 @@ export interface _SERVICE {
   'hasPermission' : ActorMethod<[string], Result_3>,
   'initCanistorage' : ActorMethod<[], Result>,
   'listFiles' : ActorMethod<[string], Result_4>,
-  'load' : ActorMethod<[string], Result_5>,
+  'load' : ActorMethod<[string, bigint], Result_5>,
   'removePermission' : ActorMethod<
     [string, Principal, boolean, boolean, boolean],
     Result

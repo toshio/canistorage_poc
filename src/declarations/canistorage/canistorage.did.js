@@ -35,7 +35,13 @@ export const idlFactory = ({ IDL }) => {
   });
   const Result_3 = IDL.Variant({ 'Ok' : Permission, 'Err' : Error });
   const Result_4 = IDL.Variant({ 'Ok' : IDL.Vec(IDL.Text), 'Err' : Error });
-  const Result_5 = IDL.Variant({ 'Ok' : IDL.Vec(IDL.Nat8), 'Err' : Error });
+  const Download = IDL.Record({
+    'sha256' : IDL.Opt(IDL.Vec(IDL.Nat8)),
+    'downloaded_at' : IDL.Nat64,
+    'chunk' : IDL.Vec(IDL.Nat8),
+    'size' : IDL.Nat64,
+  });
+  const Result_5 = IDL.Variant({ 'Ok' : Download, 'Err' : Error });
   const Result_6 = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : Error });
   return IDL.Service({
     'addPermission' : IDL.Func(
@@ -59,7 +65,7 @@ export const idlFactory = ({ IDL }) => {
     'hasPermission' : IDL.Func([IDL.Text], [Result_3], ['query']),
     'initCanistorage' : IDL.Func([], [Result], []),
     'listFiles' : IDL.Func([IDL.Text], [Result_4], ['query']),
-    'load' : IDL.Func([IDL.Text], [Result_5], ['query']),
+    'load' : IDL.Func([IDL.Text, IDL.Nat64], [Result_5], ['query']),
     'removePermission' : IDL.Func(
         [IDL.Text, IDL.Principal, IDL.Bool, IDL.Bool, IDL.Bool],
         [Result],
