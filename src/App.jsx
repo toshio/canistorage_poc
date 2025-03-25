@@ -363,17 +363,6 @@ function App() {
         setErrorGetAllInfoForPoC(result.Err.message);
       } else {
         // result.Ok
-
-        // TODO DEBUG
-        const table = "TODO: テーブル表示化"
-                    + "<pre>"
-                    + JSON.stringify(result.Ok, (key,value) => {
-                      return typeof value === 'bigint'
-                        ? Number(value.toString()) // return bigint as number (2^53-1; too enough for date)
-                        : value
-                    }, 2)
-                    + "</pre>";
-/*
         //TODO 時間無いのでraw htmlで頑張ることにする
         let table = "<table>"
                   + "  <tr>"
@@ -391,35 +380,52 @@ function App() {
           return PRINCIPALS[key] || key;
         };
 
-        const findNamesByPrincipals = (principals) => {
-          if (principals.length == 0) {
+        const findNamesByPrincipalSet = (principalSet) => {
+          if (principalSet.size == 0) {
             return "";
           }
-          return principals.reduce((str, principal)=>str+findNameByPrincipal(principal)+"<br/>", "");
+          return principalSet.values().reduce((html, principal)=>html+findNameByPrincipal(principal)+"<br/>", "");
         };
 
-        const renderRow = (info) => {
+        const renderRow = (info, inheritance) => {
           console.log(JSON.stringify(info.path));
-          console.log(`children.length: ${info.children?.length}`);
           const isDirectory = info.mimetype == "canistorage/directory";
+
+          const readableSet = new Set(info.readable);
+          const writableSet = new Set(info.writable);
+          const manageableSet = new Set(info.manageable);
+
           table += `  <tr>
                         <td>${info.path}</th>
                         <td>${isDirectory ? "" : info.mimetype}</td>
                         <td>${isDirectory ? "" : info.size}</td>
                         <td>${findNameByPrincipal(info.creator)}</td>
-                        <td>${findNamesByPrincipals(info.readable)}</td>
-                        <td>${findNamesByPrincipals(info.writable)}</td>
-                        <td>${findNamesByPrincipals(info.manageable)}</td>
+                        <td>${findNamesByPrincipalSet(readableSet)}<i>${findNamesByPrincipalSet(inheritance.readableSet.difference(readableSet))}</i></td>
+                        <td>${findNamesByPrincipalSet(writableSet)}<i>${findNamesByPrincipalSet(inheritance.writableSet.difference(writableSet))}</i></td>
+                        <td>${findNamesByPrincipalSet(manageableSet)}<i>${findNamesByPrincipalSet(inheritance.manageableSet.difference(writableSet))}</i></td>
                       </tr>\n`;
 
-          for (const child of info.children) {
-            if (child?.path) // TODO childrenが正しくとれない。
-              renderRow(child);
+          if (info?.children?.length > 0) {
+            // opt vecなので最初の要素が実際の配列
+            const children = info.children[0];
+            if (children) {
+              for (const child of children) {
+                renderRow(child, {
+                  readableSet: readableSet.union(inheritance.readableSet),
+                  writableSet: writableSet.union(inheritance.writableSet),
+                  manageableSet: manageableSet.union(inheritance.manageableSet)
+                });
+              }
+            }
           }
         };
-        renderRow(result.Ok);
+        renderRow(result.Ok, {
+          readableSet: new Set(),
+          writableSet: new Set(),
+          manageableSet: new Set()
+        });
         table += "</table>\n";
-*/
+
         setResultGetAllInfoForPoC(table);
       }
     } catch (e) {
@@ -682,7 +688,7 @@ function App() {
         <tr>
           <td>save</td>
           <td>
-              <input type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setSavePath(e.target.value)}/><br/>
+              <input type="text" placeholder="File path (Starts with '/')" onChange={(e)=>setSavePath(e.target.value)}/><br/>
               <input type="file" onChange={loadLocalFile}></input>
               <input type="text" placeholder="mimetype" value={saveMimetype} readOnly /><br/>
           </td>
@@ -698,7 +704,7 @@ function App() {
         <tr>
           <td>load</td>
           <td>
-              <input type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setLoadPath(e.target.value)}/><br/>
+              <input type="text" placeholder="File path (Starts with '/')" onChange={(e)=>setLoadPath(e.target.value)}/><br/>
           </td>
           <td>
             <button onClick={load} type="submit" disabled={!user||!loadPath}>load()</button>
@@ -712,7 +718,7 @@ function App() {
         <tr>
           <td>delete</td>
           <td>
-              <input type="text" placeholder="Directory (Starts with '/')" onChange={(e)=>setDeletePath(e.target.value)}/><br/>
+              <input type="text" placeholder="File path (Starts with '/')" onChange={(e)=>setDeletePath(e.target.value)}/><br/>
           </td>
           <td>
             <button onClick={deleteFile} type="submit" disabled={!user||!deletePath}>delete()</button>
